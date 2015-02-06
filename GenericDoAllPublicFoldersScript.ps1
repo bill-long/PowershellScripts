@@ -62,6 +62,11 @@ if ($exchService.Url -eq $null)
 }
 
 $pfsRoot = [Microsoft.Exchange.WebServices.Data.Folder]::Bind($exchService, [Microsoft.Exchange.WebServices.Data.WellKnownFolderName]::PublicFoldersRoot) 
+if ($pfsRoot -eq $null)
+{
+    return
+}
+
 $folder = $pfsRoot
 
 if ($FolderPath.Length -gt 0)
