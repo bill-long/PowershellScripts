@@ -155,7 +155,8 @@ function DoFolder($folder, $path)
         }
      
         $offset += $results.Items.Count 
-        $view = new-object Microsoft.Exchange.WebServices.Data.ItemView(100, $offset) 
+        $view = new-object Microsoft.Exchange.WebServices.Data.ItemView(100, $offset)
+        $view.PropertySet = $itemviewPropertySet
     }
 }
 
