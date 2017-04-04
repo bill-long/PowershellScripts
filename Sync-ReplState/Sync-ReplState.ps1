@@ -133,7 +133,7 @@ else
 		return
 	}
 	
-	$fids = new-object 'System.Collections.Generic.List[string]'
+	$fids = new-object 'System.Collections.Generic.HashSet[string]'
 	
 	function AddEventToFidList($event, $fidList)
 	{
@@ -143,7 +143,7 @@ else
 			$columns = $line.Split(@(','))
 			if ($columns.Length -gt 4)
 			{
-				$fidList.Add($columns[2].Trim())
+				$fidList.Add($columns[2].Trim()) | Out-Null
 			}
 		}
 	}
@@ -173,10 +173,10 @@ else
 	
 	"Found " + $fids.Count.ToString() + " repaired FIDs."
 	
-	$globcnts = new-object 'System.Collections.Generic.List[string]'
+	$globcnts = new-object 'System.Collections.Generic.HashSet[string]'
 	foreach ($fid in $fids)
 	{
-		$globcnts.Add($fid.Substring($fid.IndexOf(@('-')) + 1))
+		$globcnts.Add($fid.Substring($fid.IndexOf(@('-')) + 1)) | Out-Null
 	}
 	
 
@@ -186,8 +186,12 @@ else
 	
 	"Searching for folders that match the reported FIDs..."
 	
+	$currentCount = 0
+	$totalCount = $localPublicFolders.Count
 	foreach ($localFolder in $localPublicFolders)
 	{
+		$percentComplete = [Math]::Floor($currentCount / $totalCount * 100)
+		Write-Progress -Activity "Syncing ReplState" -Status "$currentCount / $totalCount" -PercentComplete $percentComplete -CurrentOperation $localFolder.Identity.ToString()
 		CheckFolder $localFolder
 	}
 }
