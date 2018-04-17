@@ -233,62 +233,24 @@ $totalFree = $freeSpaceByBodyTables + $freeSpaceByCategTables + $freeSpaceByDVUT
 " Total space free in all tables: " + $totalFree.ToString("F3")
 ""
 "Largest body tables:"
-$biggestTableNames = new-object 'System.Collections.Generic.List[string]'
-for ($x = 0; $x -lt 10; $x++)
+$top10BodyTables = $bodyTableSizes.GetEnumerator() | Sort-Object -Property Value -Descending | Select-Object -First 10
+foreach ($kv in $top10BodyTables)
 {
-    [double]$biggestTableSize = 0
-    [string]$biggestTableName = ""
-    foreach ($tableName in $bodyTableSizes.Keys)
-    {
-        if ($bodyTableSizes[$tableName] -gt $biggestTableSize -and (!($biggestTableNames.Contains($tableName))))
-        {
-            $biggestTableSize = $bodyTableSizes[$tableName]
-            $biggestTableName = $tableName
-        }
-    }
-    ("  " + $biggestTableName + " Owned: " + $biggestTableSize.ToString("F3") + " Free: " + $bodyTableFree[$biggestTableName].ToString("F3"))
-    $foo = $biggestTableNames.Add($biggestTableName)
+    ("  " + $kv.Key + " Owned: " + $kv.Value.ToString("F3") + " Free: " + $bodyTableFree[$kv.Key].ToString("F3"))
 }
 
 "Body tables with most free space:"
-$biggestFreeNames = new-object 'System.Collections.Generic.List[string]'
-for ($x = 0; $x -lt 10; $x++)
+$top10FreeBodyTables = $bodyTableFree.GetEnumerator() | Sort-Object -Property Value -Descending | Select-Object -First 10
+foreach ($kv in $top10FreeBodyTables)
 {
-    [double]$biggestFreeSize = 0
-    [string]$biggestFreeName = ""
-    foreach ($tableName in $bodyTableFree.Keys)
-    {
-        if ($bodyTableFree[$tableName] -gt $biggestFreeSize -and (!($biggestFreeNames.Contains($tableName))))
-        {
-            $biggestFreeSize = $bodyTableFree[$tableName]
-            $biggestFreeName = $tableName
-        }
-    }
-
-    if ($biggestFreeSize -gt 0)
-    {
-        ("  " + $biggestFreeName + " Owned: " + $bodyTableSizes[$biggestFreeName].ToString("F3") + " Free: " + $biggestFreeSize.ToString("F3"))
-    }
-
-    $foo = $biggestFreeNames.Add($biggestFreeName)
+    ("  " + $kv.Key + " Owned: " + $bodyTableSizes[$kv.Key].ToString("F3") + " Free: " + $kv.Value.ToString("F3"))
 }
 
 "Mailboxes with the most MsgView tables:"
-$mostViewsNames = new-object 'System.Collections.Generic.List[string]'
-for ($x = 0; $x -lt 10; $x++)
+$top10MsgView = $msgViewTablesPerMailbox.GetEnumerator() | Sort-Object -Property Value -Descending | Select-Object -First 10
+foreach ($kv in $top10MsgView)
 {
-    [double]$mostViewsCount = 0
-    [string]$mostViewsFID = ""
-    foreach ($mailboxFID in $msgViewTablesPerMailbox.Keys)
-    {
-        if ($msgViewTablesPerMailbox[$mailboxFID] -gt $mostViewsCount -and (!($mostViewsNames.Contains($mailboxFID))))
-        {
-            $mostViewsCount = $msgViewTablesPerMailbox[$mailboxFID]
-            $mostViewsFID = $mailboxFID
-        }
-    }
-    ("  " + $mostViewsFID + " MsgView Count: " + $mostViewsCount.ToString())
-    $foo = $mostViewsNames.Add($mostViewsFID)
+    ("  " + $kv.Key + " MsgView Count: " + $kv.Value.ToString())
 }
 
 $fileReader.Close()
