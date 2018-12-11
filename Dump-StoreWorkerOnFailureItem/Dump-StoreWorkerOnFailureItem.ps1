@@ -42,7 +42,7 @@ while ($true)
         $doc = [xml]$event.ToXml()
         $tag = $doc.Event.UserData.EventXML.Tag
         $dbGuid = $doc.Event.UserData.EventXML.DatabaseGuid.Trim(@('{', '}')).ToUpper()
-        if (!($tags.Contains($tag)))
+        if (!($dumpOnTags.Contains($tag)))
         {
             "Ignoring failure item with tag: " + $tag
             continue
